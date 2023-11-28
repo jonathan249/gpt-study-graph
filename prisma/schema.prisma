@@ -6,15 +6,30 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
+    provider = "postgresql"
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
+model Notebook {
+    id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    userId    String
+    title     String
+    isPublic  Boolean  @default(false)
+    nodes     Node[]
+}
 
-    @@index([name])
+model Node {
+    id         String    @id @default(cuid())
+    label      String
+    notebook   Notebook? @relation(fields: [notebookId], references: [id])
+    notebookId String?
+}
+
+model Edge {
+    id     String @id @default(cuid())
+    source String
+    target String
+    label  String
 }
